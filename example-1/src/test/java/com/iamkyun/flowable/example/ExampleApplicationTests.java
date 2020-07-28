@@ -1,33 +1,29 @@
 package com.iamkyun.flowable.example;
 
-import org.flowable.engine.RepositoryService;
-import org.flowable.engine.repository.ProcessDefinition;
+import org.flowable.engine.IdentityService;
 import org.flowable.form.engine.test.FormDeploymentAnnotation;
-import org.flowable.spring.impl.test.FlowableSpringExtension;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
 
-import java.util.List;
-
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import java.util.Arrays;
 
 @SpringBootTest(classes = ExampleApplication.class)
 class ExampleApplicationTests {
 
     @Autowired
-    private RepositoryService repositoryService;
+    private IdentityService identityService;
 
     @Test
     @FormDeploymentAnnotation
-    public void simpleFormInstanceTest() {
-        List<ProcessDefinition> processDefinitions =
-                repositoryService.createProcessDefinitionQuery().processDefinitionKey("holidayRequest").list();
-        assertFalse(processDefinitions.isEmpty());
+    public void identityServiceTest() {
+        long result1 = identityService.createUserQuery().userId("1").count();
+        long result2 = identityService.createUserQuery().userId("4").count();
+        long result3 = identityService.createUserQuery().userIds(Arrays.asList("1", "2", "4")).count();
+        Assertions.assertEquals(1, result1);
+        Assertions.assertEquals(0, result2);
+        Assertions.assertEquals(2, result3);
     }
 
 }
